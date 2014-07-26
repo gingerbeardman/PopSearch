@@ -492,7 +492,6 @@ function initializeEngines() {
 	se.settings.lastEngine = se.settings.defaultEngine;
 }
 function initializeSettings() {
-	var thisVersion = 1128;
 	var lastVersion = se.settings.lastVersion;
 	for (var key in defaults) {
 		if (se.settings[key] === undefined) {
@@ -533,10 +532,11 @@ function initializeSettings() {
 		var om = se.settings.hotkey.m;
 		if (om.length === 4)
 			var nm = om.charAt(0)*8 + om.charAt(2)*4 + om.charAt(1)*2 + om.charAt(3)*1;
-		else var nm = defaultHotkey.m;
+		else
+			var nm = defaultHotkey.m;
 		se.settings.hotkey = { k: oh.k, m: nm };
 	}
-	se.settings.lastVersion = thisVersion;
+	se.settings.lastVersion = 1135;
 }
 function initializeStyles() {
 	localStorage.styles = JSON.stringify(defaultStyles);

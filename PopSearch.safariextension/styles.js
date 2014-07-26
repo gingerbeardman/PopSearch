@@ -1,6 +1,5 @@
-var defaultStyles = [];
-
-defaultStyles[0] = { name:'Light', content:'\
+var defaultStyles = [
+{ name:'Light', content:'\
 html {\
    height: 100%;\
 }\
@@ -236,4 +235,5 @@ html {\
    padding-left: 10px;\
    padding-right: 10px;\
 }\
-'};
+'}
+];
