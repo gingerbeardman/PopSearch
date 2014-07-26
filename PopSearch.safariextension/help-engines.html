@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel='stylesheet' type='text/css' href='help.css' />
+		<title>PopSearch Settings Help</title>
+	</head>
+	<body id='helpBody'>
+		
+		<h1>PopSearch Help</h1>
+		
+		<h2>Adding search engines</h2>
+		
+		<p>To add a search engine, click the <strong>Add Search Engine</strong> button at the bottom of the engine table. A new row will appear at the bottom of the table. Enter a name for the new engine, a key letter (optional), and the search URL for the engine. In the search URL, use the characters <strong>%s</strong> to stand for the search term(s). When you're done, click <strong>Save</strong>.</p>
+		
+		<h3>Determining a search URL</h3>
+		
+		<div class='h3content'>
+			<p>If you want to add a search engine but you're not sure how to get the URL you need, here's what you do.</p>
+			<ol class='verbose'>
+				<li>Open a browser tab and go to the search page of the search engine you want to add. In most cases, that would just be the site's home page.</li>
+				<li>Perform a search as you would normally, using some memorable search term such as "dogcow" (without the quotes).</li>
+				<li>When the results page finishes loading, click in Safari's address bar, select the entire URL, and copy it (type Command-C).</li>
+				<li>Go back to PopSearch's settings page. In the URL box of the new engine, paste the URL you copied from the address bar.</li>
+				<li>Find the search term that you entered and replace it with the characters "<strong>%s</strong>". For example, if the old URL was "http://www.imdb.com/find?s=all&amp;q=dogcow", the new URL would be "http://www.imdb.com/find?s=all&amp;q=%s".</li>
+				<li>Click <strong>Save</strong>.</li>
+			</ol>
+		</div>
+		
+		<h3>Variables in search URLs</h3>
+		
+		<div class='h3content'>
+			<p>There are three variables that you can use in search URLs. They are as follows.</p>
+			<ul class='verbose'>
+				<li><strong>%s</strong>: As discussed above, the variable <strong>%s</strong> stands for the search terms you enter in the PopSearch search input box.</li>
+				<li><strong>%u</strong>: The variable <strong>%u</strong> stands for the full URL of the current web page. Use this whenever you want to pass the current URL as a parameter to the search engine.</li>
+				<li><strong>%h</strong>: The variable <strong>%h</strong> stands for the hostname portion of the current web page's URL. This is useful, for example, when constructing a site-specific search. (See the next topic for more information.)</li>
+			</ul>
+		</div>
+		
+		<h3>Site-specific searches</h3>
+		
+		<div class='h3content'>
+			<p>PopSearch can perform site-specific searches; that is, searches limited to the particular website you are currently viewing in Safari. PopSearch comes with two predefined site-specific search engines: <em>Google Here</em> and <em>Bing Here</em>. The way a site-specific search works is that PopSearch appends a special keyword, followed by the hostname of the current site, to the search query. The special keyword tells the search engine to limit the search to the specified site.</p>
+			<p>You can add your own site-specific searches to PopSearch. To make an engine site-specific, just insert the characters "%h" in the URL where the hostname should go. In general, you can insert "%h" after the keyword that tells the search engine to search a particular site. For example, in the URL of the predefined <em>Google Here</em> engine, the site-specific keyword is "site:", and "%h" follows immediately after.</p>
+		</div>
+		
+		<h3>Keywords</h3>
+		
+		<div class='h3content'>
+			<p>When adding a search engine, you can optionally enter a keyword for that engine. (The keyword is what appears under the "Key" heading in the engine table.) Entering a keyword will enable you to switch to the search engine in the PopSearch popup without using the engine menu: just type the keyword into the search input box, followed by a space, before you type the search terms.</p>
+			<p>A keyword can contain any number of characters, but no spaces. Try not to use a real word as a keyword, because if you do, you won't be able to search for it!</p>
+		</div>
+		
+		<h3>Using the Engine Wizard</h3>
+		
+		<div class='h3content'>
+			<p>Starting with version 1.2, PopSearch includes a feature called the <em>Engine Wizard</em> that often makes it possible to add a new search engine to PopSearch without going through the settings page. When you start the Engine Wizard on the results page of a search website, the wizard tries to determine the correct search URL for the engine by matching the contents of a non-empty text input box on the page with the search terms in the page URL. If a match is found, the wizard offers to add the engine to PopSearch with the %s token already inserted at the (hopefully) correct location.</p>
+			<p>To use the Engine Wizard:</p>
+			<ol>
+				<li>Nagivate to the home page of the search engine you want to add.</li>
+				<li>Perform a search with one or more search terms. Any terms will do, but to be safe, avoid weird characters in the input.</li>
+				<li>When the search results finish loading, right-click (or control-click) anywhere on the page and select <strong>Add This Engine To PopSearch</strong> in the context menu. (If the command does not appear in the context menu, try right-clicking in a text input box that contains the search terms.)</li>
+				<li>Follow the prompts to add the new engine: first, enter a name for the engine, then optionally enter a keyword, and finally, check the URL.</li>
+			</ol>
+			<p>The newly added search engine will be available for use in PopSearch immediately.</p>
+		</div>
+		
+		<h2>Adding bookmarklets</h2>
+		
+		<p>Starting with version 1.2.6, PopSearch supports opening JavaScript bookmarklets via its popup. You may (or may not) find this useful as a keyboard-based alternative to selecting bookmarklets in Safari's bookmarks menu or toolbar. You can open a bookmarklet in PopSearch the same way you open a search engine: just select it in the engine menu or type its keyword followed by a space in the input box, and press Enter. When opening a bookmarklet, PopSearch ignores the contents of the input box and the target menu, and simply opens the bookmarklet in the current tab.</p>
+		<p>To add a bookmarklet to PopSearch, follow the same steps as when adding a search engine, but in the URL box, paste the bookmarklet's code, making sure it begins with "javascript:".</p>
+		
+		<h2>Backing up your search engines to (and restoring them from) the cloud</h2>
+		
+		<p>If you have an account with either <a href='http://www.delicious.com/' target='_blank'>Delicious</a> or <a href='http://pinboard.in/' target='_blank'>Pinboard</a>, you can back up your PopSearch search engines to the cloud bookmarking service, where they will be saved as bookmarks tagged "PopSearch". Once you've done that, if you ever need to recreate your search engine list, either on the same computer or on another, you can do so by simply restoring your PopSearch-tagged bookmarks from the cloud.</p>
+		<p>The first time you back up your search engines, the bookmarking service will create a bookmark tagged "PopSearch" for each engine. Thereafter, whenever you back up again, the service will add new bookmarks only for those search engines whose URLs are new or changed. Thus, if you change the URL of a search engine but leave its name unchanged, when you back up again, you will have two bookmarks on the service with the same name but different URLs. PopSearch will never delete a bookmark on the service.</p>
+		<p>Conversely, when you restore your engines from the bookmarking service, PopSearch will add a new search engine for any bookmark whose URL is different from the URLs of all existing search engines. If a  bookmark has the same name as an existing search engine but a different URL, PopSearch will add the bookmark as a new search engine with that name, and append "(old)" to the name of the old search engine. PopSearch will never delete a search engine as a result of restoring from your bookmarking service.</p>
+		<p><strong>Note</strong>: The first time you back up your engines to a particular service, Safari will prompt you to enter your username and password for that service. You can choose to let Safari remember this information for you so you don't have to enter it again the next time you back up or restore. If you enter an incorrect username or password, you will need to restart Safari before trying again.</p>
+		
+		<div id='footer'>
+			<a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://creativecommons.org/images/public/somerights20.png" /></a><br />2011 Canisbos Computing
+		</div>
+		
+	</body>
+</html>

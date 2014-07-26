@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" charset="utf-8">
+
+HTMLElement.prototype.getFirst = function (cn) {
+	return this.getElementsByClassName(cn)[0];
+};
+function addEngineForm(engineObj,idx) {
+	var element;
+	var newEngineForm = document.createElement('form');
+	newEngineForm.className = 'engineForm';
+	newEngineForm.setAttribute('onsubmit','handleEFSubmission()');
+	
+	element = document.createElement('input');
+	element.type = 'text';
+	element.name = 'engNameBox';
+	element.className = 'engInputBox engNameBox';
+	element.setAttribute('onfocus', 'handleEFFocus()');
+	element.setAttribute('onblur', 'handleEFBlur()');
+	element.setAttribute('onkeyup', 'handleEFKeyUp()');
+	element.value = engineObj.name;
+	element.title = element.value;
+	newEngineForm.appendChild(element);
+	
+	element = document.createElement('input');
+	element.type = 'text';
+	element.name = 'engKeyBox';
+	element.className = 'engInputBox engKeyBox';
+	element.setAttribute('onfocus', 'handleEFFocus()');
+	element.setAttribute('onblur', 'handleEFBlur()');
+	element.setAttribute('onkeyup', 'handleEFKeyUp()');
+	element.value = engineObj.keyword;
+	element.title = element.value;
+	newEngineForm.appendChild(element);
+	
+	element = document.createElement('input');
+	element.type = 'text';
+	element.name = 'engUrlBox';
+	element.className = 'engInputBox engUrlBox';
+	element.setAttribute('onfocus', 'handleEFFocus()');
+	element.setAttribute('onblur', 'handleEFBlur()');
+	element.setAttribute('onkeyup', 'handleEFKeyUp()');
+	element.value = engineObj.url;
+	element.title = element.value;
+	newEngineForm.appendChild(element);
+	
+	element = document.createElement('input');
+	element.type = 'submit';
+	element.className = 'sButton engSaveBtn';
+	element.value = 'Save';
+	element.disabled = true;
+	newEngineForm.appendChild(element);
+	
+	element = document.createElement('input');
+	element.type = 'button';
+	element.className = 'sButton engCancelBtn';
+	element.value = 'Cancel';
+	element.disabled = true;
+	element.setAttribute('onclick', 'handleEFCancel()');
+	newEngineForm.appendChild(element);
+	
+	element = document.createElement('input');
+	element.type = 'button';
+	element.className = 'sButton engRemoveBtn';
+	element.value = 'Remove';
+	element.setAttribute('onclick', 'removeEngine()');
+	newEngineForm.appendChild(element);
+	
+	return newEngineForm;
+}
+function insertEngineTable() {
+	var engineDiv = document.getElementById('engineDiv');
+	if (document.getElementById('engineTable')) {
+		engineDiv.removeChild(document.getElementById('engineTable'));
+	}
+	var engineTable = document.createElement('div');
+	engineTable.id = 'engineTable';
+	for (var i = 0; i < engines.length; i++) {
+		engineTable.appendChild(addEngineForm(engines[i],i)); 
+	}
+	engineDiv.insertBefore(engineTable, document.getElementById('engButtonsDiv'));
+}                  
+function addNewEngineForm() {
+	var engineTable = document.getElementById('engineTable');
+	var idx = engineTable.childNodes.length;
+	var newEngineForm = addEngineForm({name:'', keyword:'', url:''},idx);
+	engineTable.appendChild(newEngineForm);
+	newEngineForm.getFirst('engNameBox').focus();
+}
+function handleEFFocus() {
+	var thisForm = event.target.parentNode;
+	thisForm.getFirst('engSaveBtn').disabled = false;
+	thisForm.getFirst('engCancelBtn').disabled = false;
+}
+function handleEFBlur() {
+	var thisForm = event.target.parentNode;
+	var textInputs = event.target.parentNode.getElementsByClassName('engInputBox');
+	var noChanges = true;
+	for (var i = 0; i < textInputs.length; i++) {
+		if (textInputs[i].value !== textInputs[i].title) {
+			noChanges = false;
+			break;
+		}
+	}
+	if (noChanges) {
+		thisForm.getFirst('engSaveBtn').disabled = true;
+		thisForm.getFirst('engSaveBtn').style.color = '';
+		thisForm.getFirst('engCancelBtn').disabled = true; 
+	}
+	else {
+		thisForm.getFirst('engSaveBtn').style.color = 'red';
+	}
+}
+function handleEFKeyUp() {
+	if (event.which === 27) event.target.blur();
+	if (event.target.name === 'engKeyBox') {
+		if (event.which === 32) {
+			var keyStr = event.target.value;
+			event.target.value = keyStr.slice(0, keyStr.length-1);
+		}
+	}
+}
+function handleEFCancel() {
+	var thisForm = event.target.parentNode;
+	var textInputs = thisForm.getElementsByClassName('engInputBox');
+	for (var i = 0; i < textInputs.length; i++) {
+		textInputs[i].value = textInputs[i].title;
+	}
+	event.target.blur();
+	thisForm.getFirst('engCancelBtn').disabled = true;
+	thisForm.getFirst('engSaveBtn').disabled = true;
+	thisForm.getFirst('engSaveBtn').removeAttribute('style');
+}
+function findFormIndex(thisEForm) {
+	var allEForms = thisEForm.parentNode.childNodes;
+	for (var i = 0; i < allEForms.length; i++) {
+		if (thisEForm === allEForms[i]) return i;
+	}
+}
+function removeEngine() {
+	var thisEForm = event.target.parentNode;
+	var allEForms = thisEForm.parentNode.childNodes;
+	if (allEForms.length === 1) {
+		var textInputs = event.target.parentNode.getElementsByClassName('engInputBox');
+		for (var i = 0; i < textInputs.length; i++) {
+			textInputs[i].value = '';
+		}
+		textInputs[0].focus();
+	} else {
+		formIndex = findFormIndex(thisEForm);
+		safari.self.tab.dispatchMessage('removeEngine', formIndex);
+		document.getElementById('engineTable').removeChild(thisEForm);
+	}
+}
+function handleEFSubmission() {
+	event.preventDefault();
+	var thisForm = event.target;
+	var formElements = event.target.childNodes;
+	var textInputs = event.target.getElementsByClassName('engInputBox');
+	var newName = thisForm.getFirst('engNameBox').value;
+	var oldName = thisForm.getFirst('engNameBox').title;
+	var newKey  = thisForm.getFirst('engKeyBox').value;
+	var oldKey  = thisForm.getFirst('engKeyBox').title;
+	var newUrl  = thisForm.getFirst('engUrlBox').value;
+	var oldUrl  = thisForm.getFirst('engUrlBox').title;
+	if (newName === '') {
+		alert('Please enter a name for this search engine.');
+		thisForm.getFirst('engNameBox').focus();
+	} else if (newUrl === '') {
+		alert('Please enter a URL for this search engine.');
+		thisForm.getFirst('engUrlBox').focus();
+	} else if (newName === oldName && newKey === oldKey && newUrl === oldUrl) {
+		for (var i = 0; i < textInputs.length; i++) {
+			textInputs[i].blur();
+		}
+		alert('No change.');
+	} else {
+		for (var i = 0; i < textInputs.length; i++) {
+			textInputs[i].blur();
+		}
+		thisForm.getFirst('engSaveBtn').removeAttribute('style');
+		formIndex = findFormIndex(thisForm);
+		var engData = {name: newName, keyword: newKey, url: newUrl};
+		var msgData = {index: formIndex, engineData: engData}
+		safari.self.tab.dispatchMessage('saveEngine', msgData);
+		thisForm.getFirst('engSaveBtn').disabled = true;
+		thisForm.getFirst('engSaveBtn').removeAttribute('style');
+		thisForm.getFirst('engCancelBtn').disabled = true;
+		// thisForm.getFirst('engNameBox').value = newName;
+		// thisForm.getFirst('engKeyBox').value = newKey;
+		// thisForm.getFirst('engUrlBox').value = newUrl;
+	}
+}
+function sortEnginesBy(key) {
+	safari.self.tab.dispatchMessage('sortEngines',key);
+}
+function resetEngines() {
+	safari.self.tab.dispatchMessage('resetEngines');
+}
+function createExImPIBox() {
+	exImPIBox = document.createElement('div');
+	exImPIBox.remove = function () {
+		document.body.removeChild(document.getElementById('exImPIBox'));
+		exImPIBox = null;
+	};
+	exImPIBox.w = 96;
+	exImPIBox.h = 72;
+	exImPIBox.id = 'exImPIBox';
+	exImPIBox.style.left = document.body.clientWidth/2  - exImPIBox.w/2 + 'px';
+	exImPIBox.style.top  = window.innerHeight/2 - exImPIBox.h/2 + 'px';
+	exImPIBox.style.width = exImPIBox.w + 'px';
+	exImPIBox.style.height = exImPIBox.h + 'px';
+	
+	var exImPIIcon = document.createElement('img');
+	exImPIIcon.id = 'exImPIIcon';
+	exImPIIcon.style.left = exImPIBox.w/2 - 16 + 'px';
+	exImPIBox.appendChild(exImPIIcon);
+	
+	var exImPIText = document.createElement('span');
+	exImPIText.id = 'exImPIText';
+	exImPIBox.appendChild(exImPIText);
+
+	document.body.appendChild(exImPIBox);
+}
+function setExImProgressIndicator(state, message) {
+	switch (state) {
+		case 'exporting': {
+			if (!document.getElementById('exImPIBox')) {
+				createExImPIBox()
+			}
+			var exImPIIcon = document.getElementById('exImPIIcon');
+			var exImPIText = document.getElementById('exImPIText');
+			exImPIIcon.src = safari.extension.baseURI + 'working.gif';
+			exImPIText.textContent = 'Exporting...';
+			break;
+		}
+		case 'importing': {
+			if (!document.getElementById('exImPIBox')) {
+				createExImPIBox()
+			}
+			var exImPIIcon = document.getElementById('exImPIIcon');
+			var exImPIText = document.getElementById('exImPIText');
+			exImPIIcon.src = safari.extension.baseURI + 'working.gif';
+			exImPIText.textContent = 'Importing...';
+			break;
+		}
+		case 'success': {
+			var exImPIIcon = document.getElementById('exImPIIcon');
+			var exImPIText = document.getElementById('exImPIText');
+			exImPIIcon.src = safari.extension.baseURI + 'success.png';
+			exImPIText.textContent = 'Finished.';
+			exImPIText.style.color = 'green';
+			setTimeout(function () {
+				var ibo = 10;
+				var iv = setInterval(function () {
+					ibo -= 2;
+					exImPIBox.style.opacity = ibo/10 + '';
+					if (ibo === 0) {
+						clearInterval(iv);
+						document.body.removeChild(document.getElementById('exImPIBox'));
+					}
+				}, 50);
+			}, 1000);
+			break;
+		}
+		case 'failure': {
+			document.body.removeChild(document.getElementById('exImPIBox'));
+			break;
+		}
+	}
+}
+function pbExport() {
+	safari.self.tab.dispatchMessage('pbExportEngines');
+}
+function pbImport() {
+	setExImProgressIndicator('importing');
+	safari.self.tab.dispatchMessage('pbImportEngines');
+}
+function handleMessage(msg) {
+	if (msg.name === 'receiveSetting') {
+		if (msg.message.key === 'engines') {
+			engines = msg.message.value;
+			insertEngineTable();
+		} else
+		if (msg.message.key === 'backupSvc') {
+			document.getElementById('backupButton').value = 'Back Up To ' + msg.message.value;
+			document.getElementById('restoreButton').value = 'Restore From ' + msg.message.value;
+		}
+	}
+	if (msg.name === 'exImResult') {
+		setExImProgressIndicator(msg.message);
+	}
+}
+function initializeStuff() {
+	exImPIBox = null;
+	safari.self.addEventListener("message", handleMessage, false);
+	safari.self.tab.dispatchMessage('passSetting','engines');
+	safari.self.tab.dispatchMessage('passSetting','backupSvc');
+}
+
+</script>
+<link rel='stylesheet' type='text/css' href='settings.css' />
+<title>PopSearch Settings</title>
+</head>
+<body id='enginesBody' onload='initializeStuff()'>
+	<h1>PopSearch Settings<a id='helpLink' class='link' href='help-engines.html' 
+		target='cksse_HelpWin'>Help</a></h1>
+	<h2>Search Engines</h2>
+	<div id='engineDiv'>
+		<p class='explanation' style='margin-bottom: 0.5em'>Changes take effect immediately 
+			after you click Save.</p>
+		<p class='explanation'>Keywords are for switching search engines without using the 
+			engine menu. To use a keyword, type it in the "Search for" box followed by a 
+			space before you type your search terms.</p>
+		<p id='engTableHeaders'>
+			<span id='engNameHead'><a class='heada' title='Sort engines by name' 
+				href='javascript:sortEnginesBy("name")'>Name</a></span>
+			<span id='engKeyHead'><a class='heada' title='Sort engines by keyword' 
+				href='javascript:sortEnginesBy("keyword")'>Key</a></span>
+			<span id='engUrlHead'><a class='heada' title='Sort engines by URL' 
+				href='javascript:sortEnginesBy("url")'>URL</a></span>
+		</p>
+		<!-- engine table goes here -->
+		<div id='engButtonsDiv'>
+			<input id='engAddButton' type='button' class='sButton' onclick='addNewEngineForm()'
+				value='Add Search Engine' />
+			<input id='engResetButton' type='button' class='sButton' onclick='resetEngines()'
+				value='Restore Default Engines' />
+			<input id='backupButton' type='button' class='sButton' onclick='pbExport()'
+				value='Back Up To Cloud' />
+			<input id='restoreButton' type='button' class='sButton' onclick='pbImport()'
+				value='Restore From Cloud' />
+		</div>
+	</div>
+</body>
+</html>

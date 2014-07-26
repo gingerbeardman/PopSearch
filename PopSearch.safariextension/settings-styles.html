@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" charset="utf-8">
+
+function initializeStuff() {
+	safari.self.addEventListener("message", handleMessage, false);
+	safari.self.tab.dispatchMessage('passStyles');
+}
+function getStyleNames(styles) {
+	var sNames = [];
+	for (var i in styles) { 
+		sNames[i] = styles[i].name; 
+	}
+	return sNames;
+}
+function handleSAreaKeyDown() {
+	if (event.which === 8 || event.which === 46) {
+		document.getElementById('saveButton').disabled = false;
+		document.getElementById('undoButton').disabled = false;
+	}
+}
+function handleSAreaKeyPress() {
+	var letter = String.fromCharCode(event.which);
+	if (!event.metaKey || (event.metaKey && (letter === 'v' || letter === 'x'))) {
+		document.getElementById('saveButton').disabled = false;
+		document.getElementById('undoButton').disabled = false;
+	}
+}
+function disableButtons() {
+	document.getElementById('saveButton').disabled = true;
+	document.getElementById('undoButton').disabled = true;
+}
+function addLinebreaks(content) {
+	content = content.replace(/([{;}])/g,'$1\n');
+	content = content.replace(/([\(,\/]) /g, '$1 \n');
+	return content;
+}
+function removeLinebreaks(content) {
+	content = content.replace(/\n/g,'');
+	return content;
+}
+function initializeStyleList(sNames, sIndex) {
+	var sListContainer = document.getElementById('sListContainer');
+	if (sListContainer.childNodes.length > 0) 
+		sListContainer.removeChild(sListContainer.childNodes[0]);
+	var styleSelect = document.createElement('select');
+	styleSelect.id = 'styleSelect';
+	styleSelect.setAttribute('size', 16);
+	// styleSelect.setAttribute('size', sNames.length+1);
+	var styleOptions = new Array(0);
+	for (var i in sNames) {
+		styleOptions[i] = document.createElement('option');
+		styleOptions[i].className = 'styleOption';
+		styleOptions[i].setAttribute('onclick','handleStyleSelection(' + i + ')');
+		styleOptions[i].innerHTML = sNames[i];
+		styleSelect.appendChild(styleOptions[i]);
+	}
+	styleSelect.selectedIndex = sIndex;
+	sListContainer.appendChild(styleSelect);
+	return styleSelect;
+}
+function populateStyleArea(sIndex) {
+	var styleArea = document.getElementById('styleArea');
+	var cachedContent = styles[sIndex].content;
+	niceCachedContent = addLinebreaks(cachedContent);
+	styleArea.value = niceCachedContent;
+	return styleArea;
+}
+function handleStyleSelection(oIndex) {
+	populateStyleArea(oIndex);
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'selectedStyleIndex', 
+		value : oIndex
+	});
+	sIndex = oIndex;
+	saveMessage.innerHTML = 'PopSearch will use the style selected below.';
+}
+function duplicateStyle() {
+	var oIndex = styleSelect.selectedIndex;
+	var defaultName = sNames[oIndex] + ' copy';
+	var newName = prompt('Please name the new style.', defaultName);
+	var message = {
+		sIndex   : -1, 
+		sName    : newName, 
+		sContent : styles[oIndex].content
+	};
+	safari.self.tab.dispatchMessage('saveStyle', message);
+}
+function deleteStyle() {
+	safari.self.tab.dispatchMessage('deleteStyle', styleSelect.selectedIndex);
+}
+function resetStyles() {
+	safari.self.tab.dispatchMessage('resetStyles');
+}
+function saveStyle() {
+	disableButtons();
+	if (styleArea.value === niceCachedContent) {
+		saveMessage.innerHTML = 'There were no changes.';
+	}
+	else {
+		saveMessage.innerHTML = 'Style saved. Changes will take effect immediately.';
+		var collapsedContent = removeLinebreaks(styleArea.value);
+		var oIndex = styleSelect.selectedIndex;
+		styles[oIndex].content = collapsedContent;
+		var message = {
+			sIndex   : oIndex, 
+			sName    : styles[oIndex].name, 
+			sContent : collapsedContent
+		};
+		safari.self.tab.dispatchMessage('saveStyle', message);
+		niceCachedContent = styleArea.value;
+	}
+}
+function handleSAreaFocus() {
+	saveMessage.innerHTML = 'Don&apos;t forget to click Save.';
+}
+function handleSAreaBlur() {
+	if (styleArea.value === niceCachedContent) {
+		saveMessage.innerHTML = '&nbsp;';
+		disableButtons();
+	}
+}
+function undoChanges() {
+	styleArea.value = niceCachedContent;
+	disableButtons();
+	saveMessage.innerHTML = 'Changes to this style have been undone.';
+}
+function handleMessage(msg) {
+	if (msg.name === 'receiveStyles') {
+		styles      = msg.message.styles;
+		sIndex      = msg.message.sIndex;
+		sNames      = getStyleNames(styles);
+		styleSelect = initializeStyleList(sNames, sIndex);
+		styleArea   = populateStyleArea(sIndex);
+		saveMessage = document.getElementById('styleMessage');
+		var deleteButton = document.getElementById('deleteButton');
+		deleteButton.disabled = false;
+		if (styles.length < 2) {
+			deleteButton.disabled = true;
+		}
+	}
+}
+
+</script>
+<link rel='stylesheet' type='text/css' href='settings.css' />
+<title>PopSearch Settings</title>
+</head>
+<body id='stylesBody' onload='initializeStuff()'>
+	<h1>PopSearch Settings<a id='helpLink' class='link' href='help-styles.html' 
+		target='cksse_HelpWin'>Help</a></h1>
+	<h2>Styles</h2>
+	<div id='styleMessage'>PopSearch will use the style selected below.</div>
+	<div id='styleMainDiv'>
+		<div id='styleLeftDiv'>
+			<div id='sListContainer'></div>
+			<div id='styleButtonsDiv'>
+				<button id='duplicateButton' class='styleButton' 
+					onclick='duplicateStyle()'>Duplicate</button><br />
+				<button id='deleteButton' class='styleButton' 
+					onclick='deleteStyle()'>Delete</button><br /><br />
+				<button id='resetButton' class='styleButton' 
+					onclick='resetStyles()'>Restore Defaults</button><br /><br />
+				<button id='saveButton' class='styleButton' 
+					onclick='saveStyle()' disabled=true>Save</button><br />
+				<button id='undoButton' class='styleButton' 
+					onclick='undoChanges()' disabled=true>Undo</button>
+			</div>
+		</div>
+		<div id='styleRightDiv'>
+			<textarea id='styleArea' onfocus='handleSAreaFocus()' onblur='handleSAreaBlur()' 
+				onkeydown='handleSAreaKeyDown()' onkeypress='handleSAreaKeyPress()'></textarea>
+		</div>
+	</div>
+</body>
+</html>

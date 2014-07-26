@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script type="text/javascript" charset="utf-8">
+         function handleMessage(e) {
+            if (e.name == 'popoverPref') {
+               if (e.message == false)
+                  document.getElementById('sfMenuItem3').style.visibility = 'visible';
+            }
+         }
+         function initialize() {
+            safari.self.addEventListener('message', handleMessage, false);
+            safari.self.tab.dispatchMessage('passPopoverPref');
+         }
+         function loadPage(href) {
+            parent.contentFrame.location.href = href;
+            document.getElementById('sfMenuItem1').className = 'sfMenuItem-unselected';
+            document.getElementById('sfMenuItem2').className = 'sfMenuItem-unselected';
+            document.getElementById('sfMenuItem3').className = 'sfMenuItem-unselected';
+            event.target.className = 'sfMenuItem-selected';
+         }
+      </script>
+      <link rel='stylesheet' type='text/css' href='settings.css' />
+      <title>PopSearch Settings</title>
+   </head>
+   <body id='sfMenu' onload="initialize()">
+      <div id='sfMenuItem1' class='sfMenuItem-selected'
+        onclick='loadPage("settings-hotkey.html")'>General</div>
+      <div id='sfMenuItem2' class='sfMenuItem-unselected'
+        onclick='loadPage("settings-engines.html")'>Engines</div>
+      <div id='sfMenuItem3' class='sfMenuItem-unselected' style='visibility: hidden'
+        onclick='loadPage("settings-styles.html")'>Styles</div>
+   </body>
+</html>

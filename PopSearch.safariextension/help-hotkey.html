@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' type='text/css' href='help.css' />
+    <title>PopSearch Settings Help</title>
+</head>
+<body id='helpBody'>
+
+    <h1>PopSearch Help</h1>
+    
+    <h2>Setting the Hotkey</h2>
+    
+    <p>To set the hotkey that invokes the PopSearch popup, click inside the input box and press the desired key combination. The hotkey is saved immediately and can be used right away.</p>
+    <p>The hotkey can be any character key, with or without Command, Option, Control, Shift, or any combination of those modifiers. By &quot;character key&quot; I mean any key that produces a visible character if you press it while typing text. (This does NOT include special keys such as PageDown, Home, NumLock, the arrow keys, etc.)</p>
+    <p class='note'><strong>Note:</strong> Due to a bug, if you enter a hotkey that uses <strong>Control</strong> as the only modifier, on rare occasions, PopSearch may not notice that the Control key was pressed. If this happens, just enter the same hotkey again, and PopSearch will record it correctly.</p>
+    
+    <h2 id='TabSettings'>Tab Settings</h2>
+    
+    <h4>Open search results in new tab</h4>
+    <p class='expl'>If this option is selected, search results will open in a new tab instead of the current tab.</p>
+    <p class='note'>You can temporarily reverse this setting by holding down the <strong>Command</strong> key (or, on a Windows computer, the <strong>Ctrl</strong> key) when executing a search.</p>
+    
+    <h4>Open results in a new tab when searching on selected text</h4>
+    <p class='expl'>If this option is selected, search results will open in a new tab if you had selected some text on the current page before invoking PopSearch.</p>
+    <p class='note'>You can temporarily reverse this setting by holding down the <strong>Command</strong> key (or, on a Windows computer, the <strong>Ctrl</strong> key) when executing a search.</p>
+    
+    <h4>Open new tab in background</h4>
+    <p class='expl'>If this option is selected, when opening search results in a new tab, the new tab will be opened in the background. Otherwise, the new tab will become active upon opening.</p>
+    <p class='note'>You can temporarily reverse this setting by holding down the <strong>Shift</strong> key when executing a search.</p>
+    
+    <h4>Position new tab next to current tab</h4>
+    <p class='expl'>If this option is selected, when opening search results in a new tab, the new tab will be placed next to the current tab. Otherwise, it will be placed at the end.</p>
+    <p class='note'>You can temporarily reverse this setting by holding down the <strong>Control</strong> key when executing a search.</p>
+    
+    <h4>Use new window instead of new tab</h4>
+    <p class='expl'>If this option is selected, when opening search results in a new tab, a new foreground window will be used instead.</p>
+    <p class='note'>You can temporarily reverse this setting by holding down the <strong>Option</strong> key when executing a search.</p>
+    
+    <h2 id='DefaultEngine'>Default Search Engine</h2>
+    
+    <h4>Default search engine</h4>
+    <p class='expl'>Select the default search engine.</p>
+    
+    <h4>In PopSearch's search engine menu, preselect</h4>
+    <p class='expl'>This setting determines which search engine will be preselected when you invoke PopSearch. The options are as follows:</p>
+    
+    <ul style='margin-top: 0'>
+        <li style='margin-top: 0.5em'><strong>The default search engine</strong><br />If this option is selected, the default search engine will always be preselected in the search engine menu whenever you invoke PopSearch.</li>
+        <li style='margin-top: 0.5em'><strong>The last-used search engine (same for all sites)</strong><br />If this option is selected, PopSearch will remember which search engine you last used and will preselect it the next time you invoke PopSearch, ignoring the default search engine setting.</li>
+        <li style='margin-top: 0.5em'><strong>The last-used search engine (specific to each site)</strong><br />If this option is selected, PopSearch will keep a list of the 100 most recently visited sites and remember which search engine you last used on each of those sites. The next time you invoke PopSearch on one of these sites, the same search engine will be preselected. If a site is not yet in the recent sites list, the default search engine will be preselected.</li>
+    </ul>
+    
+    <h2 id='Suggestions'>Search Suggestions</h2>
+    
+    <p>This setting determines whether and what kind of a menu of search suggestions will be shown below the query box as you type a query. To select a suggestion, use the up/down arrow keys on the keyboard.</p>
+    
+    <h4>Show suggestions from Google</h4>
+    <p class='expl'>If this option is enabled, PopSearch will download and display under the query box a list of up to ten popular search queries from Google that are similar to the terms you have typed.</p>
+    
+    <p class='note'><strong>Note:</strong> The Google suggestions feature uses an unofficial API. It is likely that Google will discontinue this API in the future. When that happens, suggestions will stop working.</p>
+    
+    <h4>Show similar past search queries</h4>
+    <p class='expl'>If this option is enabled, PopSearch will keep a list of the 500 most recent search queries and use this list to display up to ten past queries containing your typed terms.</p>
+    
+    <h4>Don't show suggestions</h4>
+    <p class='expl'>If this option is enabled, PopSearch will not display suggestions under the query box.</p>
+    
+    <h2 id='BackupService'>Backup Service</h2>
+    
+    <p class='expl'>PopSearch features the ability to back up your custom search engines to various web services, such as Delicious and Pinboard. If you have an account with one of these services, you can use the buttons at the bottom of the search engines page to back up your custom engines to the service, or to restore them once you've completed a backup. Backing up your engines is useful not only in case you lose your PopSearch settings for any reason, but also when you want to copy your engines from one computer to another.</p>
+    <p>The first time you back up your engines to a service, you will be prompted to enter your username and password for that service. Backing up and restoring take just a few seconds.</p>
+    <p class='note'><strong>Note:</strong> PopSearch cannot back up to (or restore from) Delicious accounts that use a Yahoo login. In order to use back up your search engines to Delicious, please use a native Delicious account.</p>
+    
+    <h2 id='CharacterEncoding'>Character Encoding</h2>
+    
+    <h4>Support non-Latin characters in search terms</h4>
+    <p class='expl'>Enabling this option will cause PopSearch to properly encode non-Latin (for example, Chinese) characters in search terms.</p>
+    <p class='note'><strong>Note:</strong> Enabling this option may cause problems with some search engines when the search query includes extended-ASCII characters, such as characters with diacritical marks (e.g., <em>&#225;</em>, <em>&#241;</em>, or <em>&#252;</em>). If you enter extended-ASCII characters often, leave this option disabled.</p>
+    
+    <div id='footer'>
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://creativecommons.org/images/public/somerights20.png" /></a><br />2011 Canisbos Computing
+    </div>
+
+</body>
+</html>

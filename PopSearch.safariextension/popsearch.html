@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" charset="utf-8" src='popsearch.js'></script>
+	<style type="text/css">
+		html, body { background: none; }
+	</style>
+	<style type="text/css" id="stylesheet"></style>
+	<link rel="stylesheet" id="stylelink">
+</head>
+<body id="ps_body" onload="initialize(false)" style="cursor: default;">
+	<div id="ps_outerdiv" style="visibility: hidden;">
+		<div id="ps_upperdiv" style="white-space: nowrap;">
+			<span id="ps_label1" class="ps_label">Search for</span>
+			<input id="ps_queryfield" class="ps_textinput" type="text">
+			<span id="ps_label2" class="ps_label">&nbsp;using</span>
+			<select id="ps_enginemenu" class="ps_menu"></select>
+			<button id="ps_gobutton" class="ps_button">Go!</button>
+			<button id="ps_settingsbutton" class="ps_button">Settings</button>
+		</div>
+		<div id="ps_lowerdiv">
+			<select id="ps_historymenu" style="display: none; position: absolute;"></select>
+		</div>
+	</div>
+</body>
+</html>

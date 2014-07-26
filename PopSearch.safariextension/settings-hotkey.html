@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<link rel='stylesheet' type='text/css' href='settings.css'>
+		<script type="text/javascript" charset="utf-8">
+function initializeStuff() {
+	safari.self.addEventListener("message", handleMessage, false);
+	var message = [
+		'hotkey',
+		'targetBits',
+		'engines',
+		'defaultEngine',
+		'engineDefault',
+		'saveHistory',
+		'getSuggestions',
+		'backupSvc',
+		'encodeQuery',
+	];
+	safari.self.tab.dispatchMessage('passSettings', message);
+}
+function handleFocus() {
+	event.preventDefault();
+	event.target.select();
+	document.getElementById('hkStatusMsg').innerHTML = '&nbsp;';
+}
+function handleKeyDown() {
+	event.stopPropagation();
+	k = event.which;
+	switch (event.which) {
+		case 27:	// escape
+			event.target.blur();
+			break;
+		case 37:	// left
+		case 38:	// up
+		case 39:	// right
+		case 40:	// down
+			event.preventDefault();
+			break;
+		case  9:	// tab
+		case 16:	// shift
+		case 17:	// ctrl
+		case 18:	// option
+		case 91:	// command
+		case 93:	// command-right
+			break;
+		default:
+			event.preventDefault();
+			saveHotkey(event);
+		break;
+	}
+}
+function saveHotkey() {
+	event.preventDefault();
+	event.target.blur();
+	var m = event.shiftKey * 1 + event.altKey * 2 + event.ctrlKey * 4 + event.metaKey * 8;
+	safari.self.tab.dispatchMessage('saveHotkey', {k:k, m:m});
+	document.getElementById('hkStatusMsg').innerHTML = '&nbsp; Hotkey saved.';
+}
+function resetHotkey() {
+	safari.self.tab.dispatchMessage('resetHotkey');
+}
+function toggleTargetBit() {
+	var targetBits = {
+		nt: document.getElementById('ntCheckbox').checked,
+		sn: document.getElementById('snCheckbox').checked,
+		uw: document.getElementById('uwCheckbox').checked,
+		tb: document.getElementById('tbCheckbox').checked,
+		ta: document.getElementById('taCheckbox').checked,
+		tp: (document.getElementById('tpRadio0').checked)? 0 : 1
+	};
+	if (targetBits.ta) {
+		document.getElementById('tpRadio0').disabled = false;
+		document.getElementById('tpRadio1').disabled = false;
+		document.getElementById('tpRadioLabel0').className = 'label enabled';
+		document.getElementById('tpRadioLabel1').className = 'label enabled';
+	} else {
+		document.getElementById('tpRadio0').disabled = true;
+		document.getElementById('tpRadio1').disabled = true;
+		document.getElementById('tpRadioLabel0').className = 'label disabled';
+		document.getElementById('tpRadioLabel1').className = 'label disabled';
+	}
+	safari.self.tab.dispatchMessage('setSetting', { name:'targetBits', value:targetBits });
+}
+function setNewTabPosition(value) {
+	safari.self.tab.dispatchMessage('setNewTabPosition', value);
+}
+function setDefaultEngine() {
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'defaultEngine', 
+		value : event.target.selectedIndex
+	});
+}
+function setEngineDefault(value) {
+	if (event.target.checked) {
+		safari.self.tab.dispatchMessage('setSetting', { 
+			name  : 'engineDefault', 
+			value : value
+		});
+	}
+}
+function setSuggestions(value) {
+	safari.self.tab.dispatchMessage('setSetting', {
+		name  : 'saveHistory',
+		value : (value === 1)
+	});
+	safari.self.tab.dispatchMessage('setSetting', {
+		name  : 'getSuggestions',
+		value : (value === 2)
+	});
+}
+function toggleSearchHistory() {
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'saveHistory', 
+		value : event.target.checked
+	});
+	if (event.target.checked) {
+		document.getElementById('hmmlSelect').disabled = false;
+		document.getElementById('hmmlLabel1').className = 'enabled';
+		document.getElementById('hmmlLabel2').className = 'enabled';
+	} else {
+		document.getElementById('hmmlSelect').disabled = true;
+		document.getElementById('hmmlLabel1').className = 'disabled';
+		document.getElementById('hmmlLabel2').className = 'disabled';
+	}
+}
+function setHistoryMenuMaxLength() {
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'hMenuMaxLength', 
+		value : event.target.options[event.target.selectedIndex].value * 1
+	});
+}
+function clearSearchHistory() {
+	safari.self.tab.dispatchMessage('clearSearchHistory');
+	document.getElementById('chStatusMsg').innerHTML = '&nbsp; History cleared.';
+}
+function clearSiteHistory() {
+	safari.self.tab.dispatchMessage('clearSiteHistory');
+	document.getElementById('cmStatusMsg').innerHTML = '&nbsp; Site memory cleared.';
+}
+function setBackupSvc() {
+	var bsSelect = document.getElementById('bsSelect');
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'backupSvc', 
+		value : bsSelect.options[bsSelect.selectedIndex].value
+	});
+}
+function toggleQueryEncoding() {
+	safari.self.tab.dispatchMessage('setSetting', { 
+		name  : 'encodeQuery', 
+		value : event.target.checked
+	});
+}
+function handleMessage(msg) {
+	if (msg.name === 'receiveSettings') {
+		if (msg.message.hotkey) {
+			var hotkey = msg.message.hotkey;
+			var cStr = String.fromCharCode(hotkey.k);
+			cStr = (cStr == ' ') ? 'Space' : cStr;
+			var mStr = '';
+			var m = hotkey.m;
+			if (m >= 8) { mStr = '⌘'       ; m -= 8; }
+			if (m >= 4) { mStr = '⌃' + mStr; m -= 4; }
+			if (m >= 2) { mStr = '⌥' + mStr; m -= 2; }
+			if (m >= 1) { mStr = '⇧' + mStr; }
+			document.getElementById('hotkeyInput').value = mStr + cStr;
+		}
+		if (msg.message.targetBits) {
+			var targetBits = msg.message.targetBits;
+			document.getElementById('ntCheckbox').checked = targetBits.nt;
+			document.getElementById('snCheckbox').checked = targetBits.sn;
+			document.getElementById('uwCheckbox').checked = targetBits.uw;
+			document.getElementById('tbCheckbox').checked = targetBits.tb;
+			document.getElementById('taCheckbox').checked = targetBits.ta;
+			var tpButtons = document.getElementsByName('tpRadio');
+			tpButtons[targetBits.tp].checked = true;
+			if (targetBits.ta) {
+				tpButtons[0].disabled = false;
+				tpButtons[1].disabled = false;
+				document.getElementById('tpRadioLabel0').className = 'label enabled';
+				document.getElementById('tpRadioLabel1').className = 'label enabled';
+			} else {
+				tpButtons[0].disabled = true;
+				tpButtons[1].disabled = true;
+				document.getElementById('tpRadioLabel0').className = 'label disabled';
+				document.getElementById('tpRadioLabel1').className = 'label disabled';
+			}
+		}
+		if (msg.message.engines) {
+			var engines = msg.message.engines;
+			var deSelect = document.getElementById('deSelect');
+			for (var i = deSelect.options.length-1; i >= 0; i--){
+				deSelect.remove(i);
+			}
+			for (var i=0; i < engines.length; i++) {
+				var io = document.createElement('option');
+				io.text = engines[i].name;
+				deSelect.add(io, null);
+			}
+		}
+		if (typeof msg.message.defaultEngine === 'number') {
+			var deSelect = document.getElementById('deSelect');
+			deSelect.selectedIndex = msg.message.defaultEngine;
+		}
+		if (typeof msg.message.engineDefault === 'number') {
+			var deRadios = [
+				document.getElementById('deRadio0'),
+				document.getElementById('deRadio1'),
+				document.getElementById('deRadio2')
+			];
+			deRadios[msg.message.engineDefault].checked = true;
+		}
+		if (typeof msg.message.getSuggestions === 'boolean') {
+			document.getElementById('suRadio2').checked = msg.message.getSuggestions;
+		}
+		if (typeof msg.message.saveHistory === 'boolean') {
+			document.getElementById('suRadio1').checked = msg.message.saveHistory;
+		}
+		if (typeof msg.message.encodeQuery === 'boolean') {
+			document.getElementById('ceCheckbox').checked = msg.message.encodeQuery;
+		}
+		if (msg.message.backupSvc) {
+			var bsSelect = document.getElementById('bsSelect');
+			bsSelect.selectedIndex = (function () {
+				for (var i = 0; i < bsSelect.options.length; i++) {
+					if (bsSelect.options[i].value == msg.message.backupSvc) {
+						return i;
+					}
+				}
+			})();
+		}
+	}
+}
+		</script>
+		<title>PopSearch Settings</title>
+	</head>
+<body id='generalBody' onload='initializeStuff()'>
+	<h1>PopSearch Settings<a id='helpLink' class='link' href='help-hotkey.html' 
+		target='cksse_HelpWin'>Help</a></h1>
+	<h2>General</h2>
+	<h3>Hotkey</h3>
+	<form id='hkForm'>
+		<p class='explanation'>Click inside the box below and then type the hotkey you want
+			to use. The new hotkey will take effect immediately.</p>
+		<input type='text' id='hotkeyInput' onmouseup='handleFocus()' 
+			onfocus='handleFocus()' onkeydown='handleKeyDown()'>
+		<button id='hkResetBtn' type='button' class='sButton' onclick='resetHotkey()'>Reset 
+			to Default</button>
+		<span id='hkStatusMsg' class='statusMsg'>&nbsp;</span>
+	</form>
+	<h3>Tab Settings <a class='qlink' href='help-hotkey.html#TabSettings' 
+		target='cksse_HelpWin'>?</a></h3>
+	<form id='tsForm'>
+		<input type='checkbox' id='ntCheckbox' onchange='toggleTargetBit()'>
+		<label for='ntCheckbox' id='ntCbLabel'>Open search results in a new tab by default</label>
+		<br>
+		<input type='checkbox' id='snCheckbox' onchange='toggleTargetBit()'>
+		<label for='snCheckbox' id='snCbLabel'>Open results in a new tab when searching on
+		  selected text</label>
+		<br>
+		<input type='checkbox' id='tbCheckbox' onchange='toggleTargetBit()'>
+		<label for='tbCheckbox' id='tbCbLabel'>Open new tab in background</label>
+		<br>
+		<input type='checkbox' id='taCheckbox' onchange='toggleTargetBit()'>
+		<label for='taCheckbox' id='taCbLabel'>Put new tab next to current tab:</label>&nbsp;
+		<input type='radio' id='tpRadio0' name='tpRadio' onchange='setNewTabPosition(0)'>
+		<label for='tpRadio0' id='tpRadioLabel0'>on left</label>&nbsp;
+		<input type='radio' id='tpRadio1' name='tpRadio' onchange='setNewTabPosition(1)'>
+		<label for='tpRadio1' id='tpRadioLabel1'>on right</label>
+		<br>
+		<input type='checkbox' id='uwCheckbox' onchange='toggleTargetBit()'>
+		<label for='uwCheckbox' id='uwCbLabel'>Use new window instead of new tab</label>
+	</form>
+	<h3>Default Search Engine <a class='qlink' href='help-hotkey.html#DefaultEngine' 
+		target='cksse_HelpWin'>?</a></h3>
+	<form id='deForm'>
+		<label for='deSelect'>Default search engine: </label>
+		<select id='deSelect' onchange='setDefaultEngine()'></select>
+		<br>
+		<div style='margin-top: 0.5em;'>
+			<label>In PopSearch's search engine menu, preselect: </label>
+		</div>
+		<div style='margin: 5px 0 0 1em;'>
+			<input type='radio' name='deRadio' id='deRadio0' onchange='setEngineDefault(0)'>
+			<label for='deRadio0'>The default search engine</label>
+			<br>
+			<input type='radio' name='deRadio' id='deRadio1' onchange='setEngineDefault(1)'>
+			<label for='deRadio1'>The last-used search engine (same for all sites)</label>
+			<br>
+			<input type='radio' name='deRadio' id='deRadio2' onchange='setEngineDefault(2)'>
+			<label for='deRadio2'>The last-used search engine (specific to each site)</label>
+			<button id='memoryClearBtn' type='button' class='sButton' 
+				onclick='clearSiteHistory()'>Clear Site Memory</button>
+			<span id='cmStatusMsg' class='statusMsg'>&nbsp;</span>
+		</div>
+	</form>
+	<h3>Search Suggestions <a class='qlink' href='help-hotkey.html#Suggestions' 
+		target='cksse_HelpWin'>?</a></h3>
+	<p id="lionSHWarning" style="display: none">
+		<span style="font: 12px AppleColorEmoji">⚠</span>&nbsp;
+		<em>Search suggestions are temporarily disabled due to a bug in Safari 5.1.</em>
+	</p>
+	<form id='suForm'>
+		<input type='radio' name="suRadio" id='suRadio2' onchange='setSuggestions(2)'>
+		<label for='suRadio2'>Show suggestions from Google</label>
+		<br>
+		<input type='radio' name="suRadio" id='suRadio1' onchange='setSuggestions(1)'>
+		<label for='suRadio1'>Show similar past search queries</label>
+		<button id='historyClearBtn' type='button' class='sButton' 
+			onclick='clearSearchHistory()'>Clear Search History</button>
+		<span id='chStatusMsg' class='statusMsg'>&nbsp;</span>
+		<br>
+		<input type='radio' name="suRadio" id='suRadio0' onchange='setSuggestions(0)' checked>
+		<label for='suRadio0'>Don't show suggestions</label>
+		<!--
+		<label for='hmmlSelect' id='hmmlLabel1' class='disabled' 
+			style='margin-left:1.8em'>Show up to</label>
+		<select id='hmmlSelect' length=1 onchange='setHistoryMenuMaxLength()' disabled>
+			<option value=5>  5</option>
+			<option value=10>10</option>
+			<option value=20>20</option>
+		</select>
+		<label for='hmmlSelect' id='hmmlLabel2' class='disabled'>matches in history 
+			menu</label>
+		-->
+	</form>
+	<h3>Backup Service <a class='qlink' href='help-hotkey.html#BackupService' 
+		target='cksse_HelpWin'>?</a></h3>
+	<form id='bsForm'>
+		<label for='bsSelect'>Back up custom search engines to:</label>
+		<select id='bsSelect' onchange='setBackupSvc()'>
+			<option>Delicious</option>
+			<option>Pinboard</option>
+		</select>
+	</form>
+	<h3>Character Encoding <a class='qlink' href='help-hotkey.html#CharacterEncoding' 
+		target='cksse_HelpWin'>?</a></h3>
+	<form id='ceForm'>
+		<input type='checkbox' id='ceCheckbox' onchange='toggleQueryEncoding()'>
+		<label for='ceCheckbox'>Support non-Latin characters in search terms</label>
+	</form>
+</body>
+</html>
