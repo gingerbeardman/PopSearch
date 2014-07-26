@@ -78,7 +78,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>https://raw.githubusercontent.com/canisbos/Popsearch/master/dist/Update.plist</string>
+	<string>https://raw.githubusercontent.com/canisbos/PopSearch/master/dist/Update.plist</string>
 	<key>Website</key>
 	<string>http://canisbos.com/</string>
 </dict>
