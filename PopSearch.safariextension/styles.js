@@ -117,9 +117,8 @@ html {\
    padding-left: 10px;\
    padding-right: 10px;\
 }\
-'};
-
-defaultStyles[1] = { name:'Dark', content:'\
+'},
+{ name:'Dark', content:'\
 html {\
    height: 100%;\
 }\
