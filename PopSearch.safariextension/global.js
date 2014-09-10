@@ -490,7 +490,7 @@ function initializeEngines() {
 		new Engine('Yahoo!','y','https://search.yahoo.com/search?p=%s')
 	];
 	localStorage.engines = JSON.stringify(engines);
-	se.settings.defaultEngine = 6;
+	se.settings.defaultEngine = 5;
 	se.settings.lastEngine = se.settings.defaultEngine;
 }
 function initializeSettings() {
