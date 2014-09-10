@@ -9,7 +9,7 @@ function HostPrefs(hostname,lastEngine) {
 }
 function addEngine(name,keyword,url) {
 	var engines = JSON.parse(localStorage.engines);
-	engines[engines.length] = new Engine(name,keyword,url);
+	engines.push(new Engine(name,keyword,url));
 	localStorage.engines = JSON.stringify(engines);
 }
 function convertEngines() {
@@ -470,23 +470,25 @@ function handleSettingChange(event) {
 	}
 }
 function initializeEngines() {
-	var engines = [];
-	engines.push(new Engine('Amazon','az',
-		'http://www.amazon.com/s/?url=search-alias=aps&field-keywords=%s'));
-	engines.push(new Engine('Bing','b','http://www.bing.com/search?q=%s'));
-	engines.push(new Engine('Bing Here','bh','http://www.bing.com/search?q=%s+site:%h'));
-	engines.push(new Engine('DuckDuckGo','d','http://duckduckgo.com/?q=%s'));
-	engines.push(new Engine('Facebook','f','http://www.facebook.com/search/?q=%s'));
-	engines.push(new Engine('Google','g','http://www.google.com/search?q=%s'));
-	engines.push(new Engine('Google Here','gh','http://www.google.com/search?q=%s+site:%h'));
-	engines.push(new Engine('Google Images','gi','http://www.google.com/images?q=%s'));
-	engines.push(new Engine('IMDb','imdb','http://www.imdb.com/find?s=all&q=%s'));
-	engines.push(new Engine('MacUpdate','mu','http://www.macupdate.com/find/%s'));
-	engines.push(new Engine('Translate This Page','tp','http://translate.google.com/translate?u=%u'));
-	engines.push(new Engine('Twitter','t','http://twitter.com/#!/search/%s'));
-	engines.push(new Engine('Wikipedia','w','http://en.wikipedia.org/?search=%s'));
-	engines.push(new Engine('Wolfram Alpha','wa','http://www.wolframalpha.com/input/?i=%s'));
-	engines.push(new Engine('Yahoo!','y','http://search.yahoo.com/search?p=%s'));
+	var engines = [
+		new Engine('Amazon','az','http://www.amazon.com/s/?url=search-alias=aps&field-keywords=%s'),
+		new Engine('Bing','b','https://www.bing.com/search?q=%s'),
+		new Engine('Bing Here','bh','https://www.bing.com/search?q=%s+site:%h'),
+		new Engine('DuckDuckGo','d','https://duckduckgo.com/?q=%s'),
+		new Engine('Facebook','f','https://www.facebook.com/search/more/?q=%s'),
+		new Engine('Google','g','https://www.google.com/search?q=%s'),
+		new Engine('Google Here','gh','https://www.google.com/search?q=%s+site:%h'),
+		new Engine('Google Images','gi','https://www.google.com/images?q=%s'),
+		new Engine('IMDb','imdb','http://www.imdb.com/find?s=all&q=%s'),
+		new Engine('Ixquick','ix','https://ixquick.com/do/search?cat=web&query=%s'),
+		new Engine('MacUpdate','mu','http://www.macupdate.com/find/%s'),
+		new Engine('Startpage','s','https://startpage.com/do/search?cat=web&query=%s'),
+		new Engine('Translate This Page','tp','https://translate.google.com/translate?u=%u'),
+		new Engine('Twitter','t','http://twitter.com/search?q=%s'),
+		new Engine('Wikipedia','w','http://en.wikipedia.org/?search=%s'),
+		new Engine('Wolfram Alpha','wa','http://www.wolframalpha.com/input/?i=%s'),
+		new Engine('Yahoo!','y','https://search.yahoo.com/search?p=%s')
+	];
 	localStorage.engines = JSON.stringify(engines);
 	se.settings.defaultEngine = 6;
 	se.settings.lastEngine = se.settings.defaultEngine;
