@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Canisbos Computing</string>
 	<key>Builder Version</key>
-	<string>9537.78.2</string>
+	<string>9537.85.10.17.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>PopSearch</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.8</string>
+	<string>2.0.9</string>
 	<key>CFBundleVersion</key>
-	<string>1136</string>
+	<string>1137</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -65,6 +65,8 @@
 	</dict>
 	<key>Description</key>
 	<string>Puts your favorite search engines a keystroke away.</string>
+	<key>DeveloperIdentifier</key>
+	<string>ZANVZTSER6</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

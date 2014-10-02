@@ -7,65 +7,62 @@ HTMLElement.prototype.getFirst = function (cn) {
 	return this.getElementsByClassName(cn)[0];
 };
 function addEngineForm(engineObj,idx) {
-	var element;
+	var el;
 	var newEngineForm = document.createElement('form');
 	newEngineForm.className = 'engineForm';
-	newEngineForm.setAttribute('onsubmit','handleEFSubmission()');
+	newEngineForm.onsubmit = handleEFSubmission;
 	
-	element = document.createElement('input');
-	element.type = 'text';
-	element.name = 'engNameBox';
-	element.className = 'engInputBox engNameBox';
-	element.setAttribute('onfocus', 'handleEFFocus()');
-	element.setAttribute('onblur', 'handleEFBlur()');
-	element.setAttribute('onkeyup', 'handleEFKeyUp()');
-	element.value = engineObj.name;
-	element.title = element.value;
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'text';
+	el.name = 'engNameBox';
+	el.className = 'engInputBox engNameBox';
+	el.onfocus = handleEFFocus;
+	el.onkeyup = handleEFKeyUp;
+	el.value = engineObj.name;
+	el.title = el.value;
+	newEngineForm.appendChild(el);
 	
-	element = document.createElement('input');
-	element.type = 'text';
-	element.name = 'engKeyBox';
-	element.className = 'engInputBox engKeyBox';
-	element.setAttribute('onfocus', 'handleEFFocus()');
-	element.setAttribute('onblur', 'handleEFBlur()');
-	element.setAttribute('onkeyup', 'handleEFKeyUp()');
-	element.value = engineObj.keyword;
-	element.title = element.value;
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'text';
+	el.name = 'engKeyBox';
+	el.className = 'engInputBox engKeyBox';
+	el.onfocus = handleEFFocus;
+	el.onkeyup = handleEFKeyUp;
+	el.value = engineObj.keyword;
+	el.title = el.value;
+	newEngineForm.appendChild(el);
 	
-	element = document.createElement('input');
-	element.type = 'text';
-	element.name = 'engUrlBox';
-	element.className = 'engInputBox engUrlBox';
-	element.setAttribute('onfocus', 'handleEFFocus()');
-	element.setAttribute('onblur', 'handleEFBlur()');
-	element.setAttribute('onkeyup', 'handleEFKeyUp()');
-	element.value = engineObj.url;
-	element.title = element.value;
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'text';
+	el.name = 'engUrlBox';
+	el.className = 'engInputBox engUrlBox';
+	el.onfocus = handleEFFocus;
+	el.onkeyup = handleEFKeyUp;
+	el.value = engineObj.url;
+	el.title = el.value;
+	newEngineForm.appendChild(el);
 	
-	element = document.createElement('input');
-	element.type = 'submit';
-	element.className = 'sButton engSaveBtn';
-	element.value = 'Save';
-	element.disabled = true;
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'submit';
+	el.className = 'sButton engSaveBtn';
+	el.value = 'Save';
+	el.disabled = true;
+	newEngineForm.appendChild(el);
 	
-	element = document.createElement('input');
-	element.type = 'button';
-	element.className = 'sButton engCancelBtn';
-	element.value = 'Cancel';
-	element.disabled = true;
-	element.setAttribute('onclick', 'handleEFCancel()');
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'button';
+	el.className = 'sButton engCancelBtn';
+	el.value = 'Cancel';
+	el.disabled = true;
+	el.onclick = handleEFCancel;
+	newEngineForm.appendChild(el);
 	
-	element = document.createElement('input');
-	element.type = 'button';
-	element.className = 'sButton engRemoveBtn';
-	element.value = 'Remove';
-	element.setAttribute('onclick', 'removeEngine()');
-	newEngineForm.appendChild(element);
+	el = document.createElement('input');
+	el.type = 'button';
+	el.className = 'sButton engRemoveBtn';
+	el.value = 'Remove';
+	el.onclick = removeEngine;
+	newEngineForm.appendChild(el);
 	
 	return newEngineForm;
 }
@@ -83,19 +80,31 @@ function insertEngineTable() {
 }                  
 function addNewEngineForm() {
 	var engineTable = document.getElementById('engineTable');
-	var idx = engineTable.childNodes.length;
+	var idx = engineTable.children.length;
 	var newEngineForm = addEngineForm({name:'', keyword:'', url:''},idx);
 	engineTable.appendChild(newEngineForm);
 	newEngineForm.getFirst('engNameBox').focus();
 }
-function handleEFFocus() {
-	var thisForm = event.target.parentNode;
-	thisForm.getFirst('engSaveBtn').disabled = false;
-	thisForm.getFirst('engCancelBtn').disabled = false;
+function handleEFFocus(event) {
+	var thisForm = event.target.parentElement;
+	// thisForm.getFirst('engSaveBtn').disabled = false;
+	// thisForm.getFirst('engCancelBtn').disabled = false;
 }
-function handleEFBlur() {
-	var thisForm = event.target.parentNode;
-	var textInputs = event.target.parentNode.getElementsByClassName('engInputBox');
+function handleEFKeyUp(event) {
+	var field = event.target;
+	var thisForm = field.parentElement;
+	if (event.which === 27) {
+		field.blur();
+		thisForm.querySelector('.engCancelBtn').click();
+		return;
+	}
+	if (field.name === 'engKeyBox') {
+		if (event.which === 32) {
+			var keyStr = field.value;
+			field.value = keyStr.slice(0, keyStr.length - 1);
+		}
+	}
+	var textInputs = thisForm.querySelectorAll('.engInputBox');
 	var noChanges = true;
 	for (var i = 0; i < textInputs.length; i++) {
 		if (textInputs[i].value !== textInputs[i].title) {
@@ -103,27 +112,12 @@ function handleEFBlur() {
 			break;
 		}
 	}
-	if (noChanges) {
-		thisForm.getFirst('engSaveBtn').disabled = true;
-		thisForm.getFirst('engSaveBtn').style.color = '';
-		thisForm.getFirst('engCancelBtn').disabled = true; 
-	}
-	else {
-		thisForm.getFirst('engSaveBtn').style.color = 'red';
-	}
+	thisForm.getFirst('engSaveBtn').disabled = noChanges;
+	thisForm.getFirst('engCancelBtn').disabled = noChanges; 
 }
-function handleEFKeyUp() {
-	if (event.which === 27) event.target.blur();
-	if (event.target.name === 'engKeyBox') {
-		if (event.which === 32) {
-			var keyStr = event.target.value;
-			event.target.value = keyStr.slice(0, keyStr.length-1);
-		}
-	}
-}
-function handleEFCancel() {
-	var thisForm = event.target.parentNode;
-	var textInputs = thisForm.getElementsByClassName('engInputBox');
+function handleEFCancel(event) {
+	var thisForm = event.target.parentElement;
+	var textInputs = thisForm.querySelectorAll('.engInputBox');
 	for (var i = 0; i < textInputs.length; i++) {
 		textInputs[i].value = textInputs[i].title;
 	}
@@ -133,16 +127,16 @@ function handleEFCancel() {
 	thisForm.getFirst('engSaveBtn').removeAttribute('style');
 }
 function findFormIndex(thisEForm) {
-	var allEForms = thisEForm.parentNode.childNodes;
+	var allEForms = thisEForm.parentElement.children;
 	for (var i = 0; i < allEForms.length; i++) {
 		if (thisEForm === allEForms[i]) return i;
 	}
 }
-function removeEngine() {
-	var thisEForm = event.target.parentNode;
-	var allEForms = thisEForm.parentNode.childNodes;
+function removeEngine(event) {
+	var thisEForm = event.target.parentElement;
+	var allEForms = thisEForm.parentElement.children;
 	if (allEForms.length === 1) {
-		var textInputs = event.target.parentNode.getElementsByClassName('engInputBox');
+		var textInputs = thisEForm.querySelectorAll('.engInputBox');
 		for (var i = 0; i < textInputs.length; i++) {
 			textInputs[i].value = '';
 		}
@@ -153,11 +147,11 @@ function removeEngine() {
 		document.getElementById('engineTable').removeChild(thisEForm);
 	}
 }
-function handleEFSubmission() {
+function handleEFSubmission(event) {
 	event.preventDefault();
 	var thisForm = event.target;
-	var formElements = event.target.childNodes;
-	var textInputs = event.target.getElementsByClassName('engInputBox');
+	var formElements = event.target.children;
+	var textInputs = thisForm.querySelectorAll('.engInputBox');
 	var newName = thisForm.getFirst('engNameBox').value;
 	var oldName = thisForm.getFirst('engNameBox').title;
 	var newKey  = thisForm.getFirst('engKeyBox').value;
