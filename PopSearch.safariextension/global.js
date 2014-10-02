@@ -141,31 +141,26 @@ function getSuggestions(queryString, callback) {
 }
 function handleBeforeSearch(event) {
 	if (se.settings.handleABSearch) {
-		event.preventDefault();
-		var query = event.query;
-		var engineIndex;
-		var wordSearch = /(\S+) +(.+)/.exec(query);
-		if (wordSearch) {
+		var markedQuery = /^\s*(\S+) +(.+)/.exec(event.query);
+		if (markedQuery) {
+			var query = markedQuery[2];
+			var engineKey = markedQuery[1];
 			var engines = JSON.parse(localStorage.engines);
-			for (var i = engines.length - 1; i >= 0; i--) {
-				if (engines[i].keyword === wordSearch[1]) {
+			for (var engineIndex = -1, i = engines.length - 1; i >= 0; i--) {
+				if (engines[i].keyword === engineKey) {
 					engineIndex = i; break;
 				}
 			}
-			if (engineIndex !== undefined) {
-				query = wordSearch[2];
-			} else {
-				engineIndex = getDefaultEngine();
+			if (engineIndex >= 0) {
+				event.preventDefault();
+				doSearch({
+					input  : query, 
+					eidx   : engineIndex,
+					target : event.target,
+					ck: false, mk: false, ok: false, sk: false,
+				});
 			}
-		} else {
-			engineIndex = getDefaultEngine();
 		}
-		doSearch({
-			input  : query, 
-			eidx   : engineIndex,
-			target : event.target,
-			ck: false, mk: false, ok: false, sk: false,
-		});
 	}
 }
 function handleCommand(event) {
@@ -490,7 +485,7 @@ function initializeEngines() {
 		new Engine('Yahoo!','y','https://search.yahoo.com/search?p=%s')
 	];
 	localStorage.engines = JSON.stringify(engines);
-	se.settings.defaultEngine = 5;
+	se.settings.defaultEngine = engines.indexOf(engines.find(function (eng) { return eng.name == 'Google' }));
 	se.settings.lastEngine = se.settings.defaultEngine;
 }
 function initializeSettings() {
@@ -724,12 +719,12 @@ function updateDefaultStyles() {
 const defaults = {
 	backupSvc      : 'Delicious',
 	encodeQuery    : false,
-	engineDefault  : 1,
+	engineDefault  : 0,
 	getSuggestions : true,
 	handleABSearch : true,
 	history        : [],
 	hMenuMaxLength : 10,
-	hotkey         : { k: 75, m: (mac) ? 8 : 4},
+	hotkey         : { k: 75, m: 8 },
 	saveHistory    : false,
 	targetBits     : { nt:false, sn:true, uw:false, tb:false, ta:true, tp:1 },
 	topHostPrefs   : [],
