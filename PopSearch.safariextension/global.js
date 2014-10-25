@@ -141,26 +141,31 @@ function getSuggestions(queryString, callback) {
 }
 function handleBeforeSearch(event) {
 	if (se.settings.handleABSearch) {
-		var markedQuery = /^\s*(\S+) +(.+)/.exec(event.query);
-		if (markedQuery) {
-			var query = markedQuery[2];
-			var engineKey = markedQuery[1];
+		event.preventDefault();
+		var query = event.query;
+		var engineIndex;
+		var wordSearch = /(\S+) +(.+)/.exec(query);
+		if (wordSearch) {
 			var engines = JSON.parse(localStorage.engines);
-			for (var engineIndex = -1, i = engines.length - 1; i >= 0; i--) {
-				if (engines[i].keyword === engineKey) {
+			for (var i = engines.length - 1; i >= 0; i--) {
+				if (engines[i].keyword === wordSearch[1]) {
 					engineIndex = i; break;
 				}
 			}
-			if (engineIndex >= 0) {
-				event.preventDefault();
-				doSearch({
-					input  : query, 
-					eidx   : engineIndex,
-					target : event.target,
-					ck: false, mk: false, ok: false, sk: false,
-				});
+			if (engineIndex !== undefined) {
+				query = wordSearch[2];
+			} else {
+				engineIndex = getDefaultEngine();
 			}
+		} else {
+			engineIndex = getDefaultEngine();
 		}
+		doSearch({
+			input  : query, 
+			eidx   : engineIndex,
+			target : event.target,
+			ck: false, mk: false, ok: false, sk: false,
+		});
 	}
 }
 function handleCommand(event) {
