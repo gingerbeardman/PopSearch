@@ -2,19 +2,19 @@ function buildEngineMenu() {
 	engines = iframed ? settings.engines : JSON.parse(localStorage.engines);
 	engineKeys = [];
 	var engineOptions = [];
-	for (var i in engines) { 
-		engineKeys[i] = engines[i].keyword; 
+	for (var i in engines) {
+		engineKeys[i] = engines[i].keyword;
 		engineOptions[i] = document.createElement('option');
-		engineOptions[i].innerHTML = engines[i].name; 
+		engineOptions[i].innerHTML = engines[i].name;
 	}
 	if (engineMenu.childNodes.length > 0) {
 		engineCount = engineMenu.childNodes.length;
 		for (var i=0; i<engineCount; i++) {
-			engineMenu.removeChild(engineMenu.childNodes[0]); 
+			engineMenu.removeChild(engineMenu.childNodes[0]);
 		}
 	}
-	for (var i in engineOptions) { 
-		engineMenu.appendChild(engineOptions[i]); 
+	for (var i in engineOptions) {
+		engineMenu.appendChild(engineOptions[i]);
 	}
 	if (defaultEngine < engines.length) {
 		engineMenu.selectedIndex = defaultEngine;
@@ -27,11 +27,11 @@ function doSearch(e) {
 		var eIndex = engineMenu.selectedIndex;
 		var input = queryField.value;
 		var args = {
-			input : queryField.value, 
+			input : queryField.value,
 			eidx  : eIndex,
 			mk	  : e.metaKey,
-			ok	  : e.altKey, 
-			ck	  : e.ctrlKey, 
+			ok	  : e.altKey,
+			ck	  : e.ctrlKey,
 			sk	  : e.shiftKey
 		};
 		goAway(false);
@@ -50,7 +50,7 @@ function getSuggestionsLater(queryString) {
 			});
 		} else {
 			safari.self.tab.dispatchMessage('sendSuggestions', queryString);
-		}	
+		}
 	}, 100);
 }
 function goAway(andFocusParent) {
@@ -156,7 +156,9 @@ function initialize() {
 						window.suggestionsRequestWait = null;
 						historyMenu.skipNextPopulate = true;
 					}
-					if (popover) safari.self.height = mainDiv.clientHeight;
+					if (popover) {
+						safari.self.height = mainDiv.clientHeight;
+					}
 				} break;
 			}
 			case 38: {	//up
@@ -198,7 +200,9 @@ function initialize() {
 					clearTimeout(window.suggestionsRequestWait);
 					window.suggestionsRequestWait = null;
 					historyMenu.style.display = 'none';
-					if (popover) safari.self.height = mainDiv.clientHeight;
+					if (popover) {
+						safari.self.height = mainDiv.clientHeight;
+					}
 				}
 			}
 		} else
@@ -215,7 +219,9 @@ function initialize() {
 					else safari.self.tab.dispatchMessage('sendHistoryMatches', this.value);
 				} else {
 					historyMenu.style.display = 'none';
-					if (popover) safari.self.height = mainDiv.clientHeight;
+					if (popover) {
+						safari.self.height = mainDiv.clientHeight;
+					}
 				}
 			}
 		}
@@ -226,7 +232,9 @@ function initialize() {
 	queryField.onblur = handleControlBlur;
 	queryField.addEventListener('blur', function (e) {
 		historyMenu.style.display = 'none';
-		if (popover) safari.self.height = mainDiv.clientHeight;
+		if (popover) {
+			safari.self.height = mainDiv.clientHeight;
+		}
 	}, false);
 	engineMenu = document.getElementById('ps_enginemenu');
 	engineMenu.onfocus = handleControlFocus;
@@ -315,22 +323,29 @@ function initialize() {
 		this.innerHTML = '';
 		this.size = 0;
 		for (var i = 0; i < matches.length; i++) {
-			var matchItem = document.createElement('option');
-			matchItem.onclick = function() {
-				e.stopPropagation();
+			var menuItem = document.createElement('option');
+			menuItem.onmousedown = function (e) {
+				return false;
 			}
-			matchItem.ondblclick = function() {
+			menuItem.onclick = function (e) {
+				queryField.value = e.currentTarget.innerHTML;
+				setTimeout(function () {
+					historyMenu.style.display = 'none';
+				}, 250);
+			};
+			menuItem.ondblclick = function (e) {
+				historyMenu.style.display = 'none';
 				doSearch(e);
-			}
-			matchItem.defaultSelected = false;
-			matchItem.selected = false;
-			matchItem.className = 'cksse_HistoryMatch';
-			matchItem.innerHTML = matches[i];
-			this.add(matchItem);
+			};
+			menuItem.defaultSelected = false;
+			menuItem.selected = false;
+			menuItem.className = 'cksse_HistoryMatch';
+			menuItem.innerHTML = matches[i];
+			this.add(menuItem);
 		}
-		var matchItems = this.options;
-		if (matchItems.length > 0) {
-			this.size = (matchItems.length === 1) ? 2 : matchItems.length;
+		var menuItems = this.options;
+		if (menuItems.length > 0) {
+			this.size = (menuItems.length === 1) ? 2 : menuItems.length;
 			this.selectedIndex = -1;
 			this.style.left = queryField.offsetLeft + 'px';
 			this.style.top = queryField.offsetTop + queryField.offsetHeight + 'px';
@@ -339,7 +354,9 @@ function initialize() {
 		} else {
 			this.style.display = 'none';
 		}
-		if (popover) safari.self.height = mainDiv.clientHeight + historyMenu.clientHeight;
+		if (popover) {
+			safari.self.height = mainDiv.clientHeight + historyMenu.clientHeight;
+		}
 	}
 	historyMenu.selectNext = function () {
 		if (this.selectedIndex === -1 || this.selectedIndex === this.options.length - 1) {
@@ -436,7 +453,7 @@ function initiateGetSuggestions(queryString) {
 function openSettingsPage(e) {
 	if (e.button == undefined || e.button == 0) {
 		if (popover) {
-			safari.application.activeBrowserWindow.openTab().url = 
+			safari.application.activeBrowserWindow.openTab().url =
 			 safari.extension.baseURI + 'settings.html';
 		}
 		else safari.self.tab.dispatchMessage('openSettings');
